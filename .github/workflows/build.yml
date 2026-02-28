@@ -29,6 +29,6 @@ jobs:
       - name: Package Build
         run: tar -czf claudecodeui-dist.tar.gz dist
       - name: Create Release
-        uses: softprops/action-gh-release@a06a81a
+        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b
         with:
           files: claudecodeui-dist.tar.gz

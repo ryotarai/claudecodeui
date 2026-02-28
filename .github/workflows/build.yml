@@ -2,16 +2,15 @@ name: Build
 
 on:
   push:
-    branches:
-      - fork
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,14 +19,15 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          registry-url: https://registry.npmjs.org
       - name: Install
         run: npm ci
-      - name: Set Version From Git
-        run: npm version --no-git-tag-version "0.0.0-g${GITHUB_SHA::7}"
       - name: Build
         run: npm run build
-      - name: Publish
-        run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VITE_BASE_PATH: /claudecodeui
+      - name: Package Build
+        run: tar -czf claudecodeui-dist.tar.gz dist
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: claudecodeui-dist.tar.gz

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../../../../ui/button';
 import { Input } from '../../../../../ui/input';
 import type { ApiKeyItem } from '../types';
+import { withBasePath } from '../../../../../../utils/basePath';
 
 type ApiKeysSectionProps = {
   apiKeys: ApiKeyItem[];
@@ -45,7 +46,7 @@ export default function ApiKeysSection({
       <div className="mb-4">
         <p className="text-sm text-muted-foreground mb-2">{t('apiKeys.description')}</p>
         <a
-          href="/api-docs.html"
+          href={withBasePath('/api-docs.html')}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-primary hover:underline inline-flex items-center gap-1"

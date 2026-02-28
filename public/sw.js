@@ -1,9 +1,11 @@
 // Service Worker for Claude Code UI PWA
 const CACHE_NAME = 'claude-ui-v1';
+const scopeUrl = new URL(self.registration.scope);
+const basePath = scopeUrl.pathname.endsWith('/') ? scopeUrl.pathname : `${scopeUrl.pathname}/`;
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  new URL(basePath, scopeUrl.origin).toString(),
+  new URL(`${basePath}index.html`, scopeUrl.origin).toString(),
+  new URL(`${basePath}manifest.json`, scopeUrl.origin).toString()
 ];
 
 // Install event

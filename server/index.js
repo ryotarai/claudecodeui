@@ -33,6 +33,17 @@ const c = {
 
 console.log('PORT from env:', process.env.PORT);
 
+const normalizeBasePath = (value) => {
+    if (!value) return '';
+    let base = `${value}`.trim();
+    if (!base || base === '/') return '';
+    if (!base.startsWith('/')) base = `/${base}`;
+    if (base.endsWith('/')) base = base.slice(0, -1);
+    return base;
+};
+
+const APP_BASE_PATH = normalizeBasePath(process.env.BASE_PATH || process.env.VITE_BASE_PATH || '');
+
 import express from 'express';
 import { WebSocketServer, WebSocket } from 'ws';
 import os from 'os';
@@ -214,6 +225,17 @@ async function setupProjectsWatcher() {
 
 const app = express();
 const server = http.createServer(app);
+
+if (APP_BASE_PATH) {
+    console.log(`${c.info('[INFO]')} Using base path: ${c.dim(APP_BASE_PATH)}`);
+    app.use((req, res, next) => {
+        if (req.url === APP_BASE_PATH || req.url.startsWith(`${APP_BASE_PATH}/`)) {
+            req.url = req.url.slice(APP_BASE_PATH.length) || '/';
+            return next();
+        }
+        res.status(404).end();
+    });
+}
 
 const ptySessionsMap = new Map();
 const PTY_SESSION_TIMEOUT = 30 * 60 * 1000;
@@ -892,10 +914,13 @@ wss.on('connection', (ws, request) => {
     // Parse URL to get pathname without query parameters
     const urlObj = new URL(url, 'http://localhost');
     const pathname = urlObj.pathname;
+    const strippedPathname = APP_BASE_PATH && pathname.startsWith(APP_BASE_PATH)
+        ? pathname.slice(APP_BASE_PATH.length) || '/'
+        : pathname;
 
-    if (pathname === '/shell') {
+    if (strippedPathname === '/shell') {
         handleShellConnection(ws);
-    } else if (pathname === '/ws') {
+    } else if (strippedPathname === '/ws') {
         handleChatConnection(ws);
     } else {
         console.log('[WARN] Unknown WebSocket path:', pathname);

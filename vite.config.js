@@ -10,8 +10,18 @@ export default defineConfig(({ command, mode }) => {
   // Otherwise, proxy to the specific host the backend is bound to
   const proxyHost = host === '0.0.0.0' ? 'localhost' : host
   const port = env.PORT || 3001
+  const normalizeBasePath = (value) => {
+    if (!value) return '/'
+    let base = `${value}`.trim()
+    if (!base || base === '/') return '/'
+    if (!base.startsWith('/')) base = `/${base}`
+    if (!base.endsWith('/')) base = `${base}/`
+    return base
+  }
+  const base = normalizeBasePath(env.VITE_BASE_PATH)
 
   return {
+    base,
     plugins: [react()],
     server: {
       host,

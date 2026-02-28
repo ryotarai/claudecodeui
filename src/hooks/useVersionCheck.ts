@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { version } from '../../package.json';
+import { resolveAppUrl } from '../utils/basePath';
 import { ReleaseInfo } from '../types/sharedTypes';
 
 /**
@@ -32,7 +33,7 @@ export const useVersionCheck = (owner: string, repo: string) => {
   useEffect(() => {
     const fetchInstallMode = async () => {
       try {
-        const response = await fetch('/health');
+        const response = await fetch(resolveAppUrl('/health'));
         const data = await response.json();
         if (data.installMode === 'npm' || data.installMode === 'git') {
           setInstallMode(data.installMode);

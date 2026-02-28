@@ -20,8 +20,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          registry-url: https://npm.pkg.github.com
-          scope: '@ryotarai'
+          registry-url: https://registry.npmjs.org
       - name: Install
         run: npm ci
       - name: Set Version From Git
@@ -31,4 +30,4 @@ jobs:
       - name: Publish
         run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
